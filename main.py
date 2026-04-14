@@ -24,6 +24,7 @@ password = 你的密码
 '''
 
 def load_config():
+    print(">>读取配置文件")
     """读取配置文件，如不存在则创建空白配置文件"""
     if not os.path.exists(CONFIG_FILE):
         print(f"未找到配置文件 {CONFIG_FILE}，已创建空白文件")
@@ -63,59 +64,25 @@ def load_config():
 
     return user_val, pwd_val
 
-user, pwd = load_config()
 
-
-
-#---------------------------------------------------一些不要动的东西,
-#包括程序前期配置，需要global的东西
-current_time = datetime.now()
-print(current_time.strftime("\n%Y-%m-%d %H:%M:%S"))
-# print("version212213")
-
-
-
-#co = ChromiumOptions().set_browser_path('/opt/google/chrome/google-chrome')
-co = ChromiumOptions().headless()
-browser = Chromium(co)
-
-tab = browser.latest_tab
 
 
 #----------------------------------------------------函数定义
-def LoginDef():#登录用函数
-    tab.get('http://210.31.32.126/srun_portal_success?ac_id=4&theme=pro')
-    browser.wait(second = 1)
-    login = tab.ele(locator = '#login-account',timeout = float(5))
-    username = tab.ele(locator = '#username')
-    username.click(by_js = 1);
-    username.input(vals = user,clear = 1)
-    browser.wait(second = 1)
-
-    password = tab.ele('#password')
-    password.click(by_js = 1);
-    password.input(vals = pwd,clear = 1)
-    print('账户密码输入已完成')
-    browser.wait(second = 1)
-
-    login.click(by_js =1)
-    print('登录按钮点击完成')
-    print('finish,等待检查网络连接')
-    browser.wait(second = 1)
-
 def Check():#重复链接百度 2 次，连的上返回1，两次连不上就返回0
+    print(">>外网连接测试")
     for b in range(1,(1+2) ):
-        # ↓链接测试，等待5秒，只链接1次不重试
-        baidu = tab.get(url = 'https://www.baidu.com',timeout = float(5),retry = 0)
+        # ↓链接测试，等待3秒，只链接1次不重试
+        baidu = tab.get(url = 'https://www.baidu.com',timeout = float(3),retry = 0)
         if baidu:#连的上百度就啥也不干
             print("连接测试成功")
             return True
         else:
-            print("连接失败",b,"次")
+            print("已连接失败",b,"次")
     print('没网开始登录')
     return False
 
 def LoginDecide():#两种网络状态，不同登录策略
+    print(">>读取校园网登陆状态")
     max_attempts = 3  # 最大尝试次数
     attempt_count = 0  # 当前尝试次数
 
@@ -128,11 +95,11 @@ def LoginDecide():#两种网络状态，不同登录策略
 
 
         if (not out)and(login):#没登出有登录按钮，就需要登录  #直接登录
-            print('无需注销需要登录')
+            print('未登陆无网络->直接登陆')
             LoginDef()
 
         else:#先注销再登录
-            print('注销然后登录')
+            print('已登陆但无网络->先注销再登陆')
             print('点击注销按钮')
             out.click(by_js = 1)
             print('done')
@@ -164,7 +131,46 @@ def LoginDecide():#两种网络状态，不同登录策略
             if attempt_count >= max_attempts:
                 exit_with_prompt("无法连接，我觉得不是我程序的问题了。。。。")
 
+def LoginDef():#登录用函数
+    print(">>进行登陆操作")
+    tab.get('http://210.31.32.126/srun_portal_success?ac_id=4&theme=pro')
+    browser.wait(second = 1)
+    login = tab.ele(locator = '#login-account',timeout = float(5))
+
+    print('输入账户密码')
+    username = tab.ele(locator = '#username')
+    username.click(by_js = 1);
+    username.input(vals = user,clear = 1)
+    browser.wait(second = 0.5)
+
+    password = tab.ele('#password')
+    password.click(by_js = 1);
+    password.input(vals = pwd,clear = 1)
+    print('done')
+    browser.wait(second = 0.5)
+
+    print('点击登录按钮')
+    login.click(by_js =1)
+    print('done')
+    print('登陆流程结束,等待检查网络连接')
+    browser.wait(second = 1)
+
 #----------------------------------------------------main
+
+#---------------------------------------------------一些不要动的东西,
+#包括程序前期配置，需要global的东西
+current_time = datetime.now()
+print("当前时间",current_time.strftime("\n%Y-%m-%d %H:%M:%S"))
+# print("version212213")
+
+
+
+#co = ChromiumOptions().set_browser_path('/opt/google/chrome/google-chrome')
+co = ChromiumOptions().headless()
+browser = Chromium(co)
+
+tab = browser.latest_tab
+user, pwd = load_config()
 if Check():
     pass
 else:
