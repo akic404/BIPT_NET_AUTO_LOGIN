@@ -1,0 +1,18 @@
+.vscode/
+build/
+dist/
+*.spec
+
+# Python 缓存和字节码
+__pycache__/
+*.py[cod]
+*$py.class
+
+# 配置和日志文件
+config.ini
+*.log
+
+# 编辑器临时文件
+*.swp
+*.swo
+*.tmp
