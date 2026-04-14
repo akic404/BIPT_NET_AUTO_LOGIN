@@ -161,6 +161,9 @@ def LoginDef():#登录用函数
 #包括程序前期配置，需要global的东西
 current_time = datetime.now()
 print("当前时间",current_time.strftime("\n%Y-%m-%d %H:%M:%S"))
+print("1.确保安装了chrome")
+print("2.确保关闭网络代理使用")
+print("3.项目开源地址：https://github.com/akic404/BIPT_NEW_AUTO_LOGIN")
 # print("version212213")
 
 
